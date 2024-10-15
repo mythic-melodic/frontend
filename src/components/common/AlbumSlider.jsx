@@ -9,8 +9,8 @@ const AlbumSlider = ({ AlbumList}) => {
     <Box style={{ maxWidth: "100%" }}>
       <Swiper
         spaceBetween={1}
-        slidesPerView={4}
-        slidesPerGroup={4}
+        slidesPerView={7}
+        slidesPerGroup={7}
         grabCursor={true}
         direction="horizontal"
         observer={true}
