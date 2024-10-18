@@ -1,14 +1,20 @@
-
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from './pages/HomePage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes className="App">
-          <Route path="/" element ={<HomePage/>}></Route>
-      </Routes>
-    </BrowserRouter>
+    <div className="App">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} /> {/* Consistent component name */}
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 
