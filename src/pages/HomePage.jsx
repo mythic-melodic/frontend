@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import AlbumSlider from "../components/common/AlbumSlider";
-import Sidebar from "../components/sidebar/sidebar";
+// import Sidebar from "../components/sidebar/Sidebar";
 import { Box, Stack, Typography } from "@mui/material";
 import Container from "../components/common/Container";
+import MusicPlayer from "../components/common/MusicPlayer";
+
 // Removed unused import: AlbumCard
 // import AlbumCard from "../components/common/AlbumCard/AlbumCard";
 
@@ -70,7 +72,7 @@ function HomePage() {
           backgroundColor: '#f4f4f4',
         }}
       >
-        <Sidebar />
+        {/* <Sidebar /> */}
       </Box>
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Box 
@@ -108,6 +110,7 @@ function HomePage() {
             )}
           </Stack>
       </Box>
+      <MusicPlayer />
     </Box>
   );
 }

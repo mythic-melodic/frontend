@@ -1,6 +1,6 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import AlbumCard from "./AlbumCard/AlbumCard.jsx";
+import AlbumCard from "./AlbumCard.jsx";
 import { Box } from "@mui/material";
 import "swiper/swiper-bundle.css";
 
