@@ -1,30 +1,38 @@
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid2";
+import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import Grid from "@mui/material/Grid2";
 import MenuItem from "@mui/material/MenuItem";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import MerchandiseCard from "../components/common/MerchandiseCard";
 import Select from "@mui/material/Select";
 import Typography from "@mui/material/Typography";
-import { Button } from "@mui/material";
+import MerchandiseCard from "../components/common/MerchandiseCard";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const ArtistAddNewMerchandise = () => {
-  const [category, setCategory] = useState("");
-
-  const merchandise = {
-    name: `‘I LOVE YOU.’ 10th ANNIVERSARY EDITION 2xLP + ‘THE LOVE COLLECTION’ 7”
-`,
-    category: "Physical Album",
-    price: "25",
+  const [merchandise, setMerchandise] = useState({
+    name: "",
+    category: "",
+    price: "",
+    quantityInStock: "",
+    description: "",
     image:
       "https://shop.thenbhd.com/cdn/shop/products/TheNBHD_ILoveYouD2C_1024x1024@2x.png?v=1681914792",
+    relatedAlbum: "",
+  });
+
+  const handleChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setMerchandise((values) => ({ ...values, [name]: value }));
   };
-  const handleSelectChange = (event) => {
-    // setCategory(event.target.value);
-    event.target = event.ta;
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // TODO: Add API call to add new merchandise
+    console.log(merchandise);
   };
 
   return (
@@ -36,11 +44,12 @@ const ArtistAddNewMerchandise = () => {
       >
         Add new merchandise
       </Typography>
-      <Box display="flex" flexFlow="row wrap">
+      <Box display="flex" flexflow="row wrap">
         <Grid
+          component="form"
+          onSubmit={handleSubmit}
           flex="1 1 50%"
           container
-          component="form"
           columns={2}
           p={2}
           columnSpacing={2}
@@ -50,70 +59,83 @@ const ArtistAddNewMerchandise = () => {
         >
           {/* {Merchandise Form} */}
           <Grid size={2}>
-            <FormControl variant="composed" fullWidth required>
+            <FormControl variant="filled" fullWidth required>
               <FormLabel component="h2" variant="h2">
                 Merchandise Name
               </FormLabel>
-              <OutlinedInput id="merchandise-name" fullWidth />
+              <OutlinedInput
+                name="name"
+                value={merchandise.name}
+                fullWidth
+                onChange={handleChange}
+              />
             </FormControl>
           </Grid>
           <Grid size={2}>
             <FormControl fullWidth required>
               <FormLabel>Category</FormLabel>
               <Select
-                id="merchandise-category"
-                onChange={handleSelectChange}
-                value={category}
+                id="category"
+                name="category"
+                onChange={handleChange}
+                value={merchandise.category ?? ""}
               >
-                <MenuItem value="digital-album">Digital Album</MenuItem>
-                <MenuItem value="physical-album">Physical Album</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
+                <MenuItem value="Digital Album">Digital Album</MenuItem>
+                <MenuItem value="Physical Album">Physical Album</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid size={2}>
             <FormControl fullWidth required>
-              <FormLabel>Related Albums</FormLabel>
+              <FormLabel>Related Album</FormLabel>
               <Select
-                id="merchandise-category"
-                onChange={handleSelectChange}
-                value={category}
+                id="relatedAlbum"
+                name="relatedAlbum"
+                onChange={handleChange}
+                value={merchandise.relatedAlbum ?? ""}
               >
-                <MenuItem value="chip-chrome">Chip Chrome</MenuItem>
-                <MenuItem value="sweater-weather">Sweater Weather</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
+                <MenuItem value="Chip Chrome">Chip Chrome</MenuItem>
+                <MenuItem value="Sweater Weather">Sweater Weather</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid size={{ xs: 2, sm: 2, md: 1 }}>
-            <FormControl variant="composed" fullWidth required>
+            <FormControl variant="filled" fullWidth required>
               <FormLabel>Price</FormLabel>
-              <OutlinedInput id="merchandise-price" type="number" fullWidth />
+              <OutlinedInput
+                name="price"
+                type="number"
+                fullWidth
+                onChange={handleChange}
+              />
             </FormControl>
           </Grid>
           <Grid size={{ xs: 2, sm: 2, md: 1 }}>
-            <FormControl variant="composed" fullWidth required>
+            <FormControl variant="filled" fullWidth required>
               <FormLabel>Quantity In Stock</FormLabel>
               <OutlinedInput
-                id="merchandise-quantity-in-stock"
+                name="quantityInStock"
                 type="number"
                 fullWidth
+                onChange={handleChange}
               />
             </FormControl>
           </Grid>
           <Grid size={2}>
-            <FormControl variant="composed" fullWidth>
+            <FormControl variant="filled" fullWidth>
               <FormLabel>Description</FormLabel>
               <OutlinedInput
-                id="merchandise-desciption"
+                value={merchandise.description ?? ""}
+                name="description"
                 multiline
                 minRows={4}
                 fullWidth
+                onChange={handleChange}
               />
             </FormControl>
           </Grid>
           <Grid size={2}>
-            <FormControl variant="composed" fullWidth>
+            <FormControl variant="filled" fullWidth>
               <Button
                 component="label"
                 variant="contained"
@@ -124,7 +146,7 @@ const ArtistAddNewMerchandise = () => {
               </Button>
             </FormControl>
           </Grid>
-          <Grid size={2} variant="composed">
+          <Grid size={2} variant="filled">
             <Box
               mt={2}
               display="flex"

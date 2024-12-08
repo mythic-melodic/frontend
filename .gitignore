@@ -36,3 +36,7 @@ yarn-error.log*
 dist
 dist-ssr
 *.local
+
+
+# Google API
+src/hooks/api.key.js
