@@ -3,8 +3,8 @@ import { Box, Typography, Divider, IconButton } from "@mui/material";
 import PlayIcon from "@mui/icons-material/PlayArrow";
 import { useTheme } from "@mui/material/styles";
 import { grey, red } from "@mui/material/colors";
-
 import SongMenu from "./TrackMenu";
+import SongCardMenu from "../common/SongCardMenu";
 
 const TrackItem = ({ track, type }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -16,34 +16,47 @@ const TrackItem = ({ track, type }) => {
   const formatDuration = (duration) => {
     const minutes = Math.floor(duration / 60);
     const seconds = Math.floor(duration % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   const renderLeftSide = () => (
-    <Box display="flex" alignItems="center" flex="1" overflow="hidden">
+    <Box display="flex" alignItems="center" flex="1" overflow="hidden" sx={{ width: "30px" }}>
       {/* Playing Indicator */}
       <Box
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "30px", // Fixed width for track order
+        }}
       >
         {isHovered ? (
           <IconButton sx={{ color: red[500], marginX: "2%" }}>
             <PlayIcon />
           </IconButton>
         ) : (
-          <Typography variant="body2" color="red" mr={2} ml={2} noWrap>
+          <Typography variant="body2" color="red" mr={2} ml={2}>
             {track.track_order}
           </Typography>
         )}
       </Box>
 
+      {/* Divider for separation */}
       <Divider orientation="vertical" flexItem sx={{ bgcolor: grey[500], mx: 1 }} />
 
       {/* Song Title */}
       <Box
         sx={{
           marginRight: type === "playlist" ? "10%" : "0%",
-          width: type === "playlist" ? "20%" : "80%",
+          width: {
+            xs: '200px',        // Full width on extra-small screens
+            sm: type === 'playlist' ? '200px' : '80%',  // For small screens (sm)
+            md: type === 'playlist' ? '350px' : '80%',  // For medium screens (md)
+            lg: type === 'playlist' ? '350px' : '80%',  // For large screens (lg)
+          },
+          display: "flex",
+          alignItems: "center", // Ensure all content is aligned
         }}
       >
         <Typography
@@ -60,10 +73,17 @@ const TrackItem = ({ track, type }) => {
           {track.title}
         </Typography>
       </Box>
+      <Divider orientation="vertical" flexItem sx={{ bgcolor: grey[500], mx: 1 }} />
 
       {type === "playlist" && (
-        <>
-          <Divider orientation="vertical" flexItem sx={{ bgcolor: grey[500], mx: 1 }} />
+        <Box sx={{
+          display: {
+            xs: "none",
+            sm: "block",
+            md: "block",
+          }
+        }}>
+          {/* Divider between title and artist */}
           {/* Artist */}
           <Typography
             variant="body2"
@@ -76,9 +96,9 @@ const TrackItem = ({ track, type }) => {
               whiteSpace: "nowrap",
             }}
           >
-            {track.artist}
+            {track.artists}
           </Typography>
-        </>
+        </Box>
       )}
     </Box>
   );
@@ -107,11 +127,15 @@ const TrackItem = ({ track, type }) => {
       <Typography variant="body2" color={textColor} noWrap>
         {formatDuration(track.duration)}
       </Typography>
-      <SongMenu
-        songId={track.track_order}
-        bgColor={activeColor}
-        moreColor={textColor}
-      />
+      {/* More Options */}
+      {
+        type === "playlist" ? (
+          <SongMenu TrackId={track.id} bgColor={activeColor} moreColor={textColor} />
+        ) : (
+          <SongCardMenu track={track} />
+        )
+      }
+     
     </Box>
   );
 };

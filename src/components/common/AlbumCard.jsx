@@ -50,7 +50,7 @@ const AlbumCard = ({ album }) => {
           {album.title}
         </Typography>
         <Typography variant="body2" color="white">
-          {album.artists[0]}
+          {album.artist}
         </Typography>
         <Box mt={1}>
           <Button

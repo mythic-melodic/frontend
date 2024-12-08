@@ -106,9 +106,9 @@ const Playlist = {
         }
     },
 
-    async addTrackToPlaylist(id, track, accessToken) {
+    async addTrackToPlaylist(data, accessToken) {
         try {
-            const response = await Client.post(`/playlist/${id}/track`, track, {
+            const response = await Client.post(`/playlist/track`, data, {
                 headers: {
                     token: `Bearer ${accessToken}`,
                 },
@@ -121,13 +121,13 @@ const Playlist = {
         }
     },
 
-    async deleteTrackFromPlaylist(id, track, accessToken) {
+    async deleteTrackFromPlaylist(id, track_id, accessToken) {
         try {
             const response = await Client.delete(`/playlist/${id}/track`, {
                 headers: {
                     token: `Bearer ${accessToken}`,
                 },
-                data: track,
+                data: { track_id },
             });
             return response;
         } catch (error) {

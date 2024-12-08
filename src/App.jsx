@@ -18,6 +18,17 @@ import ArtistManageMerchandise from "./pages/ArtistManageMerchandise";
 import ArtistAddNewMerchandise from "./pages/ArtistAddNewMerchandise";
 import Inbox from "./components/ArtistDashboard/Inbox";
 
+import Album from "./pages/Album";
+import Libraries from "./pages/Libraries";
+import TrackDetail from "./pages/TrackDetail";
+import { createTheme, ThemeProvider } from "@mui/material";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: ["Neue Helvetica Condensed BQ", "Inter", "san-serif"].join(","),
+  },
+});
+import AllGenre from './pages/AllGenre';
 
 // import Playlist from './pages/Playlist';
 // import MainLayout from './components/layout/MainLayout';
@@ -29,6 +40,7 @@ import Inbox from "./components/ArtistDashboard/Inbox";
 // import ManagePlaylists from './components/Admin/ManagePlaylists';
 // import CartPage from './pages/CartPage';
 // import MerchSearch from './pages/MerchSearch';
+
 
 // import Album from './pages/Album';
 // import Libraries from './pages/Libraries';
@@ -64,7 +76,6 @@ import Inbox from "./components/ArtistDashboard/Inbox";
 //   },
 // });
 
-=======
 import Playlist from "./pages/Playlist";
 import MainLayout from "./components/layout/MainLayout";
 import ShopPage from "./pages/ShopPage";
@@ -75,15 +86,11 @@ import ManageTracks from "./components/Admin/ManageTracks";
 import ManagePlaylists from "./components/Admin/ManagePlaylists";
 import CartPage from "./pages/CartPage";
 import MerchSearch from "./pages/MerchSearch";
-import UploadTrack from "./components/Artist/UploadTrack";
-import Album from "./pages/Album";
-import Libraries from "./pages/Libraries";
-import TrackDetail from "./pages/TrackDetail";
 import OrderHistory from "./pages/OrderHistory";
 import CheckOutPage from "./pages/CheckOutPage";
 import ShopLayout from "./components/layout/ShopLayout";
 import MultiSearch from "./pages/MultiSearchPage";
-import AllGenre from "./pages/AllGenre";
+import UpdatePassword from "./pages/UpdatePassword";
 
 // import Dashboard from './components/Artist/DashBoard';
 import { useEffect } from "react";
@@ -105,7 +112,6 @@ function App() {
     <ThemeProvider theme={theme}>
     <BrowserRouter>
       <Routes className="App">
-        {/* <Route path="/" element={token ? <MainLayout /> : <Navigate to="/login"/> }> */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="artists" element={<Libraries type="artists" />} />
@@ -127,6 +133,9 @@ function App() {
           {/* <Route path="dashboard" element={<Dashboard/>} /> */}
           <Route path="multi-search" element={<MultiSearch />} />
         </Route>
+          <Route path="/home" element ={<HomePage/>}></Route>
+          <Route path="/artist-profile" element ={<ArtistProfile/>}></Route>
+          <Route path="/play-screen" element ={<PlayScreen/>}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} /> 
 
