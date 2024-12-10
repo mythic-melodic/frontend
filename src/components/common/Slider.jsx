@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import AlbumCard from "./AlbumCard.jsx";
 import TrackCard from "./TrackCard.jsx";
+import CollectionCard from "./CollectionCard.jsx";
 import MerchandiseCard from "./MerchandiseCard.jsx";
 import ArtistCard from "./ArtistCard.jsx";
 import { Box } from "@mui/material";
@@ -53,26 +54,12 @@ const AlbumSlider = ({ list, type }) => {
         observer={true}
       >
 
-//         {list.map((item) => (
-//           <SwiperSlide key={item.id}>
-//             {type === "Album" && (
-//               <AlbumCard album={item} />
-//             ) }
-//             {type === "Merch" && (
-//               <MerchandiseCard merchandise={item} hoverEffect={"blur"}/>
-//             )}
-//             {
-//               type === "track" && (
-//                 <TrackCard track={item} />
-//               )
-//             }
-//           </SwiperSlide>
 
         {list != null &&
           list.map((item) => (
             <SwiperSlide key={item.id}>
               {type === "Album" ? (
-                <AlbumCard album={item} />
+                <CollectionCard collection={item} type={"Album"}/>
               ) : type === "Artist" ? (
                 <ArtistCard artist={item} />
               ) : (

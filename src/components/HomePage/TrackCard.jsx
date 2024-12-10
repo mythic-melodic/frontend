@@ -4,8 +4,18 @@ import Typography from "@mui/material/Typography";
 import SongCardMenu from "../common/SongCardMenu";
 import { IconButton } from "@mui/material";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
+import { useDispatch } from "react-redux";
+import { addTrackToQueue } from "../../redux/store";
+import useAudioPlayer from "../../hooks/useAudioPlayer";
 
 const TrackCard = ({ track }) => {
+  const dispatch = useDispatch();
+
+  const handleSaveToQueue = () => {
+    dispatch(addTrackToQueue({ id: track.id }));
+  };
+
+
   return (
     <Box
       sx={{
@@ -19,6 +29,7 @@ const TrackCard = ({ track }) => {
           opacity: 1,
         },
       }}
+      onClick={handleSaveToQueue}
     >
       {/* Album cover + Info */}
       <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -70,7 +81,13 @@ const TrackCard = ({ track }) => {
             variant="subtitle2"
             sx={{ color: "#aaa", fontSize: "14px" }}
           >
-            {track.artists.join(", ")}
+        {Array.isArray(track.artists) ? track.artists.map((artist, index) => (
+              <span key={index}>
+                <a href={`/artist/${artist.id}`}>{artist.display_name}</a>
+                {index < track.artists.length - 1 ? ", " : ""}
+              </span>
+            )) : "Unknown Artist"}
+             
           </Typography>
         </Box>
       </Box>
