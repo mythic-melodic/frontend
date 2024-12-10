@@ -8,34 +8,32 @@ import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 import InputBase from "@mui/material/InputBase";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import Toolbar from "@mui/material/Toolbar";
-import AppBar from "@mui/material/AppBar";
+import SearchIcon from "@mui/icons-material/Search";
 import HomeIcon from "@mui/icons-material/Home";
 import NewIcon from "@mui/icons-material/NewReleases";
 import PersonIcon from "@mui/icons-material/Person";
 import AlbumIcon from "@mui/icons-material/Album";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import QueueMusicIcon from "@mui/icons-material/QueueMusic";
-import SearchIcon from "@mui/icons-material/Search";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 
-
-const Sidebar = ({open = false, toggleSidebar}) => {
-  const [selectedItem, setSelectedItem] = useState("Home"); // State for active item
+const Sidebar = ({ open = false, toggleSidebar }) => {
+  const [selectedItem, setSelectedItem] = useState("Home");
+  const [searchQuery, setSearchQuery] = useState(""); // State lưu trữ nội dung tìm kiếm
   const navigate = useNavigate();
 
-  // const handleDrawerToggle = () => {
-  //   setMobileOpen(!mobileOpen);
-  // };
-
   const handleItemClick = (text) => {
-    setSelectedItem(text); // Update active item
+    setSelectedItem(text);
   };
 
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/multi-search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery(""); // Reset lại nội dung sau khi tìm kiếm
+    }
+  };
 
   const items = [
     { text: "Home", icon: <HomeIcon />, section: null },
@@ -49,7 +47,6 @@ const Sidebar = ({open = false, toggleSidebar}) => {
   ];
 
   const drawerWidth = 240;
-  const iconColor = "#fa586a";
 
   const Divider = ({ label }) => (
     <Typography
@@ -90,15 +87,25 @@ const Sidebar = ({open = false, toggleSidebar}) => {
           marginBottom: "1rem",
         }}
       >
-        <SearchIcon sx={{ color: "gray", marginRight: "8px" }} />
+        <SearchIcon
+          sx={{ color: "gray", marginRight: "8px", cursor: "pointer" }}
+          onClick={handleSearch}
+        />
         <InputBase
           placeholder="Search"
           fullWidth
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
+          onFocus={() => {
+            if (!searchQuery.trim()) navigate("/genre"); // Chỉ chuyển trang khi chưa nhập nội dung
+          }}
           sx={{
             color: "white",
             fontSize: "14px",
           }}
-          onFocus={() => navigate("/genre")} // Redirect to AllGenre page on focus
         />
       </Box>
 
@@ -114,18 +121,17 @@ const Sidebar = ({open = false, toggleSidebar}) => {
               style={{ textDecoration: "none", color: "inherit" }}
             >
               <ListItem
-                onClick={() => handleItemClick(item.text)} // Set active item on click
+                onClick={() => handleItemClick(item.text)}
                 sx={{
                   borderRadius: "5px",
                   backgroundColor:
-                    selectedItem === item.text ? "#444" : "transparent", // Active background color
+                    selectedItem === item.text ? "#444" : "transparent",
                   "&:hover": {
-                    backgroundColor: "#555", // Hover effect
+                    backgroundColor: "#555",
                   },
                 }}
               >
-                <ListItemIcon sx={{ color: iconColor }}
-                >
+                <ListItemIcon sx={{ color: "#fa586a" }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
@@ -135,7 +141,7 @@ const Sidebar = ({open = false, toggleSidebar}) => {
                       fontWeight: "bold",
                       fontSize: "14px",
                       fontFamily: "Open Sans, sans-serif",
-                      color: selectedItem === item.text ? "white" : "inherit", // Active text color
+                      color: selectedItem === item.text ? "white" : "inherit",
                     },
                   }}
                 />
@@ -149,21 +155,19 @@ const Sidebar = ({open = false, toggleSidebar}) => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      
       {/* Mobile Drawer */}
       <Drawer
         variant="temporary"
         open={open}
         onClose={() => toggleSidebar(false)}
         ModalProps={{
-          keepMounted: true, // Better performance on mobile
+          keepMounted: true,
         }}
         sx={{
           display: { xs: "block", sm: "block", md: "none" },
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             backgroundColor: "#1f1f1f",
-            boxSizing: "border-box",
             borderRight: "0px",
           },
         }}

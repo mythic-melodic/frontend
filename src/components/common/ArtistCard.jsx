@@ -17,8 +17,8 @@ const ArtistCard = ({ artist }) => {
       >
         <CardMedia
           component="img"
-          image={artist.cover}
-          alt={artist.name}
+          image={artist.cover || artist.avatar}
+          alt={artist.name || artist.display_name}
           sx={{
             objectFit: "cover",
             borderRadius: "50%",

@@ -1,19 +1,81 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import PlaylistAPI from '../../api/modules/playlist.api';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import usePlaylist from "../../hooks/usePlaylist";
 
-const CreatePlaylistPopup = ({ open, onClose }) => {
+const CreatePlaylistPopup = ({ open, onClose, trackId }) => {
   const [playlistTitle, setPlaylistTitle] = useState('');
   const [description, setDescription] = useState('');
-  //  const [showOnProfile, setShowOnProfile] = useState(false);
+  const [fileError, setFileError] = useState('');
+  const [coverImage, setCoverImage] = useState(null);
 
-  const handleCreate = () => {
-    // Handle the create action here
-    console.log({
-      playlistTitle,
-      description,
-      showOnProfile,
-    });
-    onClose();
+  const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
+  const { addTrackToPlaylist } = usePlaylist(token);
+
+  const handleAddTrackToPlaylist = async (playlistId) => {
+    try {
+      await addTrackToPlaylist(playlistId, trackId); // Add track to the new playlist
+      console.log('Added track to playlist', playlistId, trackId);
+    } catch (error) {
+      console.error("Failed to add track to playlist:", error);
+      alert("Failed to add track to playlist.");
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!playlistTitle) {
+      alert('Playlist title is required!');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', playlistTitle);
+    if (description) formData.append('description', description);
+    if (coverImage) formData.append('cover', coverImage);
+
+    try {
+      const response = await PlaylistAPI.createPlaylist(formData, token);
+      console.log('Create playlist response:', response);
+
+      if (response.message === 'Playlist created') {
+        alert('Playlist created successfully!');
+        setPlaylistTitle(''); // Reset the title
+        setDescription(''); // Reset the description
+        setCoverImage(null); // Reset the cover image
+
+        // Add track to the newly created playlist
+        handleAddTrackToPlaylist(response.playlist_id);
+
+        onClose(); // Close the popup
+        navigate(`/playlist/${response.playlist_id}`); // Redirect to the new playlist
+      } else {
+        console.error('Error creating playlist:', response.message || response);
+        alert('Failed to create the playlist. Please try again.');
+      }
+    } catch (error) {
+      console.error('API call failed:', error);
+      alert('An unexpected error occurred. Please try again later.');
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type)) {
+      setCoverImage(file);
+      setFileError('');
+    } else {
+      setCoverImage(null);
+      setFileError('Please upload a valid image file (JPEG, PNG, JPG).');
+    }
   };
 
   return (
@@ -26,7 +88,7 @@ const CreatePlaylistPopup = ({ open, onClose }) => {
           color: '#fff', // White text color
           padding: '20px',
           borderRadius: '8px',
-            width: '20rem',
+          width: '20rem',
         },
       }}
     >
@@ -44,11 +106,12 @@ const CreatePlaylistPopup = ({ open, onClose }) => {
           required
           sx={{
             '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#FF4B4B' }, // Red border color
-              '&:hover fieldset': { borderColor: '#FF4B4B' }, // Red on hover
-              '&.Mui-focused fieldset': { borderColor: '#FF4B4B' }, // Red on focus
+              '& fieldset': { borderColor: '#FF4B4B' },
+              '&:hover fieldset': { borderColor: '#FF4B4B' },
+              '&.Mui-focused fieldset': { borderColor: '#FF4B4B' },
             },
             '& .MuiInputLabel-root': { color: '#FF4B4B' },
+            '& .MuiInputBase-input': { color: '#fff' }, // Make text color white
           }}
         />
         <TextField
@@ -62,24 +125,33 @@ const CreatePlaylistPopup = ({ open, onClose }) => {
           onChange={(e) => setDescription(e.target.value)}
           sx={{
             '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#333' }, // Darker border color
+              '& fieldset': { borderColor: '#333' },
               '&:hover fieldset': { borderColor: '#333' },
               '&.Mui-focused fieldset': { borderColor: '#333' },
             },
-            '& .MuiInputLabel-root': { color: '#aaa' }, // Lighter label color
+            '& .MuiInputLabel-root': { color: '#FF4B4B' },
+            '& .MuiInputBase-input': { color: '#fff' }, // Make text color white
           }}
         />
-        {/* <FormControlLabel
-          control={
-            <Checkbox
-              checked={showOnProfile}
-              onChange={(e) => setShowOnProfile(e.target.checked)}
-              sx={{ color: '#FF4B4B' }} // Checkbox color
-            />
-          }
-          label="Show on My Profile and in Search"
-          sx={{ color: '#aaa' }} // Label color
-        /> */}
+        <Button variant="contained" component="label" sx={{ mb: 2, backgroundColor: '#e75565', mt: 2, width: '100%' }}>
+          Upload Cover Image
+          <input
+            type="file"
+            hidden
+            accept="image/jpeg, image/png, image/jpg"
+            onChange={handleFileChange}
+          />
+        </Button>
+        {fileError && (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            {fileError}
+          </Typography>
+        )}
+        {coverImage && (
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Selected File: {coverImage.name}
+          </Typography>
+        )}
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between' }}>
         <Button

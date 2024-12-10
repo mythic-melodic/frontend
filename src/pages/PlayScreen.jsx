@@ -16,36 +16,9 @@ import useAudioPlayer from "../hooks/useAudioPlayer";
 import { useMediaQuery } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@mui/material";
+import SongCardMenu from "../components/common/SongCardMenu";
 
-// const queueSong = [
-//   {
-//       id: 1,
-//       title: "Song 1",
-//       artist: "Artist 1",
-//       img: "https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/8/3/6/c/836cf31f036fb8f89b78cfd07cd77477.jpg",
-//       file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-//       desc: "Description 1",
-//       duration: "372",
-//   },
-//   {
-//       id: 2,
-//       title: "Song 2",
-//       artist: "Artist 2",
-//       img: "https://hips.hearstapps.com/hmg-prod/images/eminem-a-k-a-marshall-bruce-mathers-iii-attends-a-ceremony-news-photo-1698936282.jpg?crop=1.00xw:0.667xh;0,0.0380xh&resize=640:*",
-//       file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
-//       desc: "Description 2",
-//       duration: "279",
-//   },
-//   {
-//       id: 3,
-//       title: "Song 3",
-//       artist: "Artist 3",
-//       img: "",
-//       file: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-//       desc: "Description 3",
-//       duration: "240",
-//   }
-// ]
+
 const lyrics = `
 Intro: Jung Kook
 'Cause I, I, I'm in the stars tonight
@@ -285,13 +258,13 @@ const PlayScreen = ({
                 display: "flex",
               }}
             >
-              <IconButton>
+              {/* <IconButton>
                 <FavoriteBorderOutlined
                   sx={{ color: "white" }}
                 ></FavoriteBorderOutlined>
-              </IconButton>
+              </IconButton> */}
               <IconButton>
-                <MoreVertIcon sx={{ color: "white" }}></MoreVertIcon>
+                <SongCardMenu songId={queueSong[currentSongIndex].id} />
               </IconButton>
             </Box>
           </Box>
