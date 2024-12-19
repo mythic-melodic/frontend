@@ -12,11 +12,13 @@ import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import TextAvatar from "./TextAvatar";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
+  const userId = useSelector((state) => state.auth.user_id);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -68,21 +70,21 @@ const UserMenu = () => {
         disableScrollLock
       >
         {/* Các mục trong menu */}
-        <MenuItem onClick={() => navigateTo("/profile")}>
+        <MenuItem onClick={() => navigateTo(`/profile/${userId}`)}>
           <ListItemIcon>
             <AccountCircleIcon fontSize="medium" sx={{ color: "white" }} />
           </ListItemIcon>
           PROFILE
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => navigateTo("/update-profile")}>
+        <MenuItem onClick={() => navigateTo(`/edit-profile/${userId}`)}>
           <ListItemIcon>
             <EditIcon fontSize="medium" sx={{ color: "white" }} />
           </ListItemIcon>
-          UPDATE PROFILE
+          EDIT PROFILE
         </MenuItem>
         <Divider />
-        <MenuItem onClick={() => navigateTo("/update-password")}>
+        <MenuItem onClick={() => navigateTo(`/update-password/${userId}`)}>
           <ListItemIcon>
             <VpnKeyIcon fontSize="medium" sx={{ color: "white" }} />
           </ListItemIcon>

@@ -87,7 +87,7 @@ const CollectionCard = ({ collection, type }) => {
           <Typography component="div" noWrap>
             {collection.title}
           </Typography>
-          <Typography color="white">{collection.release_date.substring(0, 4)}</Typography>
+          <Typography color="white">{collection.release_date && collection.release_date.substring(0, 4)}</Typography>
         </CardContent>
       </Card>
     </Link>

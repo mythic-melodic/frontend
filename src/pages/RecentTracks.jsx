@@ -26,13 +26,11 @@ const RecentTracks = () => {
 
             // Gọi API để lấy bài hát mới nhất
             const response = await LibraryAPI.getRecentTracks(token, page);
-            console.log("API Response (page:", page, "):", response);
 
             if (response.length > 0) {
                 const trackDetails = await Promise.all(response.map(async (track) => {
                     // Gọi TrackAPI để lấy chi tiết cho từng bài hát
                     const trackDetail = await TrackAPI.getTrackById(track.id);
-                    console.log("track detail", trackDetail);
                     return { ...track, detail: trackDetail };
                 }));
 
@@ -64,7 +62,7 @@ const RecentTracks = () => {
     }, [page]);
 
     return (
-        <Box>
+        <Box mt={5}>
             {/* Tiêu đề thể loại */}
             <Typography variant="h4" ml={2} sx={{ color: "gray", fontWeight: "bold", paddingLeft: "10px" }}>
                 Recent Tracks
@@ -74,7 +72,7 @@ const RecentTracks = () => {
             <Stack spacing={2} sx={{ marginTop: 2 }} paddingLeft={2}>
                 {tracks.map((track) => (
                     <Box key={track.id} sx={{ width: "100%" }}>
-                        <TrackCard track={track} detail={track.detail} /> {/* Pass track detail to TrackCard */}
+                        <TrackCard track={track} /> {/* Pass track detail to TrackCard */}
                     </Box>
                 ))}
 

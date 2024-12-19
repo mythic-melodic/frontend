@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import accountApi from "../../api/modules/account.api.js";
 import { Link, useParams } from "react-router-dom";
 import Container from "../components/common/Container";
 import { Typography } from "@mui/material";
@@ -13,11 +12,13 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Input } from "@mui/material";
 import { FilledInput } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import AccountAPI from "../../src/api/modules/account.api.js"
+import {useSelector} from "react-redux";
 
 function UpdatePassword() {
-    const { username } = useParams();
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
+    const { id } = useParams();
+    const token = useSelector((state) => state.auth.token);
     const [formData, setFormData] = useState({
       oldPassword: "",
       newPassword: "",
@@ -50,7 +51,24 @@ function UpdatePassword() {
         console.log("New password must be different from old password");
         return;
       }
+
+      const { oldPassword, newPassword } = formData;
       // API logic here
+      AccountAPI.changePassword(id, { oldPassword, newPassword }, token)
+    .then((response) => {
+      if (response.success === false) {
+        console.log("Old password is incorrect");
+      } else if (response.suceess === true) {
+        console.log("Password updated successfully");
+        navigate(`/profile/${id}`);
+      } else {
+        console.log("Failed to update password");
+      }
+    })
+    .catch((error) => {
+      console.error("Error updating password:", error);
+    });
+
     };
   
     const handleChange = (event) => {
@@ -86,14 +104,18 @@ function UpdatePassword() {
                     "& .MuiOutlinedInput-root": {
                       color: "#f5f5f5", // Màu chữ trong input
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "red", // Màu label
-                    },
+                    // "& .MuiInputLabel-root": {
+                    //   color: "red", // Màu label
+                    // },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#777", // Màu viền
+                      borderColor: "gray", // Màu viền
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "transparent", // Viền khi hover
+                      borderColor: "red", // Viền khi hover
+                    },
+                    // hide the label
+                    "& .MuiInputLabel-outlined": {
+                      display: "none",
                     },
                   }}
                 >
@@ -130,16 +152,20 @@ function UpdatePassword() {
                     m: 1,
                     width: "100%",
                     "& .MuiOutlinedInput-root": {
-                      color: "#f5f5f5",
+                      color: "#f5f5f5", // Màu chữ trong input
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#bbb",
-                    },
+                    // "& .MuiInputLabel-root": {
+                    //   color: "red", // Màu label
+                    // },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#777",
+                      borderColor: "gray", // Màu viền
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#f5f5f5",
+                      borderColor: "red", // Viền khi hover
+                    },
+                    // hide the label
+                    "& .MuiInputLabel-outlined": {
+                      display: "none",
                     },
                   }}
                 >
@@ -176,16 +202,20 @@ function UpdatePassword() {
                     m: 1,
                     width: "100%",
                     "& .MuiOutlinedInput-root": {
-                      color: "#f5f5f5",
+                      color: "#f5f5f5", // Màu chữ trong input
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#bbb",
-                    },
+                    // "& .MuiInputLabel-root": {
+                    //   color: "red", // Màu label
+                    // },
                     "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#777",
+                      borderColor: "gray", // Màu viền
                     },
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#f5f5f5",
+                      borderColor: "red", // Viền khi hover
+                    },
+                    // hide the label
+                    "& .MuiInputLabel-outlined": {
+                      display: "none",
                     },
                   }}
                 >

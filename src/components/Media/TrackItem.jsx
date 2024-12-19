@@ -96,7 +96,12 @@ const TrackItem = ({ track, type }) => {
               whiteSpace: "nowrap",
             }}
           >
-            {track.artists}
+           {Array.isArray(track.artists) ? track.artists.map((artist, index) => (
+              <span key={index}>
+                <a href={`/artist/${artist.id}`}>{artist.display_name}</a>
+                {index < track.artists.length - 1 ? ", " : ""}
+              </span>
+            )) : "Unknown Artist"}
           </Typography>
         </Box>
       )}
