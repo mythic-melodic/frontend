@@ -9,75 +9,52 @@ import {
   InputAdornment,
 } from "@mui/material";
 import Container from "../components/common/Container";
-import TopBar from "../components/common/Topbar";
-
-const mockProducts = [
-  {
-    id: 1,
-    name: "BTS Official Light Stick",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/files/NBHD-HOUSE-TEE_600x.png?v=1694035989",
-  },
-  {
-    id: 2,
-    name: "Album ABC",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/NBHD-SCULPTURE-TEE_600x.png?v=1681766714",
-  },
-  {
-    id: 3,
-    name: "Album XYZ",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/HOLLYWOODHOODIE_600x.png?v=1634018637",
-  },
-  {
-    id: 4,
-    name: "BTS Official Light Stick",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/ROADTORUINCREWNECKMOCK_600x.png?v=1634018353",
-  },
-  {
-    id: 5,
-    name: "Album ABC",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/HOLLYWOODTEEFRONT_600x.png?v=1634018500",
-  },
-  {
-    id: 6,
-    name: "Album XYZ",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/HOLLYWOODHOODIE_600x.png?v=1634018637",
-  },
-  {
-    id: 7,
-    name: "BTS Official Light Stick",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/ROADTORUINCREWNECKMOCK_600x.png?v=1634018353",
-  },
-  {
-    id: 8,
-    name: "Album ABC",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/HOLLYWOODTEEFRONT_600x.png?v=1634018500",
-  },
-  {
-    id: 9,
-    name: "Album XYZ",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/HOLLYWOODHOODIE_600x.png?v=1634018637",
-  },
-  // Add more products as needed
-];
+import MerchandiseApi from "../api/modules/merchandise.api";
+import { useSelector } from "react-redux";
 
 function ShopPage() {
   const [newArrivals, setNewArrivals] = useState([]);
   const [trendingNow, setTrendingNow] = useState([]);
-  const [btsStore, setBtsStore] = useState([]);
-
+  const [artistStore, setArtistStore] = useState([]);
+  const [artistName, setArtistName] = useState([]);
+  const userId = useSelector((state) => state.auth.user_id);
   useEffect(() => {
-    setNewArrivals(mockProducts);
-    setTrendingNow(mockProducts);
-    setBtsStore(mockProducts);
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await MerchandiseApi.getNewArrivals();
+        if (!response.data.message) {
+          setNewArrivals(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching new arrivals:", error);
+      }
+    };
+
+    const fetchTrendingNow = async () => {
+      try {
+        const response = await MerchandiseApi.getTrendingNow();
+        if (!response.data.message) {
+          setTrendingNow(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching new arrivals:", error);
+      }
+    };
+
+    const fetchFavArtistStore = async () => {
+      try {
+        const response = await MerchandiseApi.getFavArtistStore(userId);
+        if (!response.data.message) {
+          setArtistStore(response.data);
+          setArtistName(response.data[0].display_name);
+        }
+      } catch (error) {
+        console.error("Error fetching new arrivals:", error);
+      }
+    };
+    fetchNewArrivals();
+    fetchTrendingNow();
+    fetchFavArtistStore();
   }, []);
   return (
     <Stack
@@ -94,9 +71,9 @@ function ShopPage() {
           <MerchandiseSlider list={trendingNow} type={"merchandise"} />
         </Container>
       )}
-      {btsStore.length > 0 && (
-        <Container color="black" header="BTS'store">
-          <MerchandiseSlider list={btsStore} type={"merchandise"} />
+      {artistStore.length > 0 && (
+        <Container color="black" header={`${artistName}'s store`}>
+          <MerchandiseSlider list={artistStore} type={"merchandise"} />
         </Container>
       )}
     </Stack>

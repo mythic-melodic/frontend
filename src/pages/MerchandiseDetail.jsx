@@ -9,61 +9,55 @@ import {
 } from "@mui/material";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import TopBar from "../components/common/Topbar";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import StarRateIcon from "@mui/icons-material/StarRate";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import MerchandiseApi from "../api/modules/merchandise.api";
+import CartApi from "../api/modules/cart.api";
+import createUrl from "../hooks/createUrl";
+import { useSelector } from "react-redux";
+import { ToastContainer, toast, Slide,Zoom  } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const MerchandiseDetail = () => {
-  const { id } = useParams(); // Get the product ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [type, setType] = useState(null);
-  const [color, setColor] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const maxQuantity = 20;
+  const [sold, setSold] = useState(null);
   const [count, setCount] = useState(1);
-  const [artist, setArtist] = useState(null);
-  const [albumImg, setAlbumImg] = useState(null);
-
-  // Mock product data (This should be replaced by actual data fetched from the database)
-  const mockProduct = {
-    id: 1,
-    name: "RUNNING HOUSE T-SHIRT",
-    artist_id: 101,
-    stock: 250,
-    album_id: 202,
-    price: 49,
-    description:
-      "A stylish, high-quality polo shirt suitable for both men and women. Made with premium fabric and designed with an oversize fit.",
-    image:
-      "https://shop.thenbhd.com/cdn/shop/products/ROADTORUINCREWNECKMOCK_600x.png?v=1634018353",
-    sold: "11.4k",
-    rating: 4.5,
-    created_at: "2024-01-15T10:00:00Z",
+  const userId = useSelector((state) => state.auth.user_id);
+  const handleFetchImage = (link) => {
+    return createUrl(link);
   };
-
-  const mockArtist = {
-    name: "Jack",
-    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZ8D6I_OM3e_cbZ5zhovzOMAm8BZxlsxxVsw&s ",
-  };
-
-  const mockAlbum = {
-    img: " https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbdUlAVv8BhOstJLt47s3uceLIQQg-E2JDVg&s",
-  };
-
   useEffect(() => {
     // Simulate fetching product data by ID
     const fetchProduct = async () => {
-      setProduct(mockProduct);
-      if (mockProduct.type && mockProduct.type.length > 0)
-        setType(mockProduct.type[0]);
-      if (mockProduct.color && mockProduct.color.length > 0)
-        setColor(mockProduct.color[0]);
+      try {
+        const response = await MerchandiseApi.getMerchandiseDetailById(id);
+        if (response) {
+          setProduct(response);
+        } else {
+          console.error("Failed to fetch merchandise:", response.message);
+        }
+      } catch (error) {
+        console.error("Error fetching merchandise:", error);
+      }
     };
-    setAlbumImg(mockAlbum.img);
-    setArtist(mockArtist);
+
+    const fetchTotalSold = async () => {
+      try {
+        const response = await MerchandiseApi.getMerchandiseTotalSoldById(id);
+        if (response) {
+          setSold(response);
+        } else {
+          console.error("Failed to fetch :", response.message);
+        }
+      } catch (error) {
+        console.error("Error fetching:", error);
+      }
+    };
     fetchProduct();
+    fetchTotalSold();
   }, [id]);
 
   const decrease = () => {
@@ -74,36 +68,48 @@ const MerchandiseDetail = () => {
 
   // Hàm xử lý tăng giá trị
   const increase = () => {
-    setCount(count + 1);
+    if (count < product.stock) setCount(count + 1);
   };
 
-  const handleAddToCart = () => {
-    console.log("Item added to cart:", {
-      id: product.id,
-      type,
-      color,
-      quantity,
-    });
-    alert("Added to cart!");
+  const handleAddToCart = async () => {
+    const cartItem = {
+      userId: userId,
+      merchandiseId: product.id,
+      quantity: count,
+    };
+    try {
+      const response = await CartApi.addToCart(cartItem);
+      if (response.success) {
+        toast.success("Item has been added to shopping cart");
+      } else {
+        toast.error("Failed to add item to cart. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("An unexpected error occurred while adding to cart.");
+    }
   };
-   
+
   const handleBuyNow = () => {
     const orderData = {
       selectedProducts: [{ ...product, quantity: count }],
-      total: count * product.price
+      total: count * product.price,
+      fromtCart: false
     };
     navigate("/shop/checkout", { state: orderData });
   };
-  const handleShop = () => {
-    navigate("/shop");
+  const handleShop = (id) => {
+    navigate(`/shop/artist/${id}`);
   };
 
   if (!product) {
     return <Typography>Loading...</Typography>;
   }
 
-  return (
-    <Box sx={{ width: "100%", backgroundColor: "#f5f5f5",paddingBottom: "5vh", }}>
+  return product.id ? (
+    <Box
+      sx={{ width: "100%", backgroundColor: "#f5f5f5", paddingBottom: "5vh" }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -139,7 +145,7 @@ const MerchandiseDetail = () => {
         >
           <Box
             component="img"
-            src={product.image}
+            src={createUrl(product.image)}
             alt={product.name}
             sx={{
               marginTop: "1.3vw",
@@ -147,11 +153,7 @@ const MerchandiseDetail = () => {
               maxHeight: "100%",
               objectFit: "cover",
               width: { md: "60vw", sm: "80vw", xs: "90vw" },
-              height: {
-                md: "35vw",
-                sm: "60vw",
-                xs: "70vw",
-              },
+              aspectRatio: 1 / 1,
             }}
           />
         </Box>
@@ -176,14 +178,14 @@ const MerchandiseDetail = () => {
                 sm: "4vw",
                 xs: "5vw",
               },
-
               fontWeight: "bold",
               marginBottom: "0.5em",
+              marginLeft: { xs: "2vw", md: 0 },
             }}
           >
             {product.name}
           </Typography>
-          <Box sx={{ color: "black" }}>
+          <Box sx={{ color: "black", width: { xs: "100%" } }}>
             <Box
               sx={{
                 display: "flex",
@@ -215,27 +217,7 @@ const MerchandiseDetail = () => {
                   },
                 }}
               >
-                Sold: {product.sold}
-              </Typography>
-              <Typography
-                sx={{
-                  color: "#ffb71f",
-                  fontSize: {
-                    md: "1.2vw",
-                    xs: "3vw",
-                  },
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <StarRateIcon
-                  sx={{
-                    marginRight: "0.5vw",
-                    width: { md: "2vw", xs: "4vw" },
-                    height: { md: "2vw", xs: "4vw" },
-                  }}
-                />{" "}
-                {product.rating} / 5
+                Sold: {sold}
               </Typography>
             </Box>
             <Box sx={{ marginLeft: "2vw", marginTop: "1.5vw", width: "90%" }}>
@@ -271,7 +253,7 @@ const MerchandiseDetail = () => {
                 Related Album:
               </Typography>
               <Link
-                to="/shop"
+                to={`/album/${product.album_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
@@ -281,7 +263,7 @@ const MerchandiseDetail = () => {
               >
                 <Box
                   component="img"
-                  src={albumImg}
+                  src={handleFetchImage(product.album_cover)}
                   alt={product.name}
                   sx={{
                     maxWidth: "100%",
@@ -290,7 +272,7 @@ const MerchandiseDetail = () => {
                     borderRadius: "50%",
                     marginLeft: "2vw",
                     width: { md: "5vw", xs: " 10vw" },
-                    height: { md: "5vw", xs: "10vw" },
+                    aspectRatio: 1 / 1,
                     border: "0.1vw gray solid",
                   }}
                 />
@@ -437,12 +419,19 @@ const MerchandiseDetail = () => {
                   </IconButton>
                 </Box>
               </Box>
+              <Box marginLeft={{ xs: "2vw", md: "1vw" }}>
+                {" "}
+                {product.stock} pieces available
+              </Box>
             </Box>
             <Box
               sx={{
+                position: {
+                  xs: "relative",
+                },
                 marginTop: {
                   md: "0",
-                  xs: "8vw"
+                  xs: "8vw",
                 },
                 display: "flex",
                 alignItems: "center",
@@ -463,7 +452,7 @@ const MerchandiseDetail = () => {
                   padding: {
                     md: "0",
                     sm: "3vw",
-                    xs: "4vw"
+                    xs: "4vw",
                   },
                   backgroundColor: "#e6d8d9",
                   minWidth: "0",
@@ -545,114 +534,149 @@ const MerchandiseDetail = () => {
           </Box>
         </Box>
       </Box>
-      <Box
-        sx={{
-          backgroundColor: "white",
-          width: "90%",
-          margin: "2% 5% -1% 5%",
-          paddingBottom:{xs: "5%"},
-          display: "flex",
-        }}
-      >
-        <Link
-          to="/shop"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: "inline-block",
-            textDecoration: "none",
+
+      {product.artist_name && (
+        <Box
+          sx={{
+            backgroundColor: "white",
+            width: "90%",
+            margin: "2% 5% -1% 5%",
+            paddingBottom: { xs: "5%" },
+            display: "flex",
           }}
         >
-          <Box
-             component="img"
-            src={artist.img}
-            sx={{
-              maxWidth: "100%",
-              maxHeight: "100%",
-              objectFit: "cover",
-              borderRadius: "50%",
-              border: "0.1vw gray solid",
-              width: {
-                md: "7vw",
-                xs: "13vw"
-              },
-              height: {
-                md: "7vw",
-                xs: "13vw"
-              },
-              marginLeft: "2vw",
-              marginTop: "2vw",
+          <Link
+            to={`/shop/artist/${product.artist_id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              textDecoration: "none",
             }}
-          />
-        </Link>
-        <Box sx={{ margin: "2vw 2vw 0vw 2vw", color: "black" }}>
-          <Typography sx={{ fontSize: {
-            md: "2vw",
-            sm: "3vw",
-            xs: "4vw"
-          } }}>
-            {artist.name}'s Store
-          </Typography>
-          <Button
-            disableRipple
-            sx={{
-              width: {
-                md: "12vw",
-                sm: "16vw",
-                xs: "20vw"
-              },
-              minWidth: "0",
-              height: {
-                md: "2.5vw",
-                xs: "5vw"
-              },
-              border: "0.12vw gray solid",
-              marginTop: "2vw",
-              "& :hover": {
-                backgroundColor: "transparent",
-                opacity: 1,
-              },
-              "&:focus": {
-                color: "black",
-                backgroundColor: "transparent",
-                opacity: 1,
-              },
-              "&:active": {
-                color: "black",
-                backgroundColor: "transparent",
-                opacity: 1,
-              },
-            }}
-            onClick={handleShop}
           >
-            <RemoveRedEyeIcon
+            <Box
+              component="img"
+              src={createUrl(product.artist_avatar)}
               sx={{
-                marginRight: "0.75vw",
+                maxWidth: "100%",
+                maxHeight: "100%",
+                objectFit: "cover",
+                borderRadius: "50%",
+                border: "0.1vw gray solid",
                 width: {
-                  md:"1.5vw",
-                  xs:"3vw"
+                  md: "7vw",
+                  xs: "13vw",
                 },
                 height: {
-                  md: "1.5vw",
-                  xs: "3vw"
+                  md: "7vw",
+                  xs: "13vw",
                 },
-                color: "black",
+                marginLeft: "2vw",
+                marginTop: "2vw",
               }}
-            />{" "}
+            />
+          </Link>
+
+          <Box sx={{ margin: "2vw 2vw 0vw 2vw", color: "black" }}>
             <Typography
-              sx={{ fontWeight: "medium", fontSize: {
-                md: "1vw",
-                sm: "1.5vw",
-                xs: "2vw"
-              }, color: "black" }}
+              sx={{
+                fontSize: {
+                  md: "2vw",
+                  sm: "3vw",
+                  xs: "4vw",
+                },
+              }}
             >
-              {" "}
-              VIEW SHOP{" "}
+              {product.artist_name}'s Store
             </Typography>
-          </Button>
+            <Button
+              disableRipple
+              sx={{
+                width: {
+                  md: "12vw",
+                  sm: "16vw",
+                  xs: "20vw",
+                },
+                minWidth: "0",
+                height: {
+                  md: "2.5vw",
+                  xs: "5vw",
+                },
+                border: "0.12vw gray solid",
+                marginTop: "2vw",
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  opacity: 1,
+                },
+                "&:focus": {
+                  color: "black",
+                  backgroundColor: "transparent",
+                  opacity: 1,
+                },
+                "&:active": {
+                  color: "black",
+                  backgroundColor: "transparent",
+                  opacity: 1,
+                },
+              }}
+              onClick={() => handleShop(product.artist_id)}
+            >
+              <RemoveRedEyeIcon
+                sx={{
+                  marginRight: "0.75vw",
+                  width: {
+                    md: "1.5vw",
+                    xs: "3vw",
+                  },
+                  aspectRatio: 1 / 1,
+                  color: "black",
+                }}
+              />{" "}
+              <Typography
+                sx={{
+                  fontWeight: "medium",
+                  fontSize: {
+                    md: "1vw",
+                    sm: "1.5vw",
+                    xs: "2vw",
+                  },
+                  color: "black",
+                }}
+              >
+                VIEW SHOP
+              </Typography>
+            </Button>
+          </Box>
         </Box>
-      </Box>
+      )}
+      <ToastContainer
+        position="top-center"
+        autoClose={1000}
+        hideProgressBar={true}
+        transition={Slide}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        closeButton={false}
+      />
     </Box>
+  ) : (
+    <Typography
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "80vh",
+        fontSize: {
+          md: "2vw",
+          xs: "4vw",
+        },
+      }}
+    >
+      No product available
+    </Typography>
   );
 };
 

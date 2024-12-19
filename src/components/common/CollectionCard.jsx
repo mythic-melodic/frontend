@@ -1,3 +1,4 @@
+
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
 import React from "react";
@@ -23,7 +24,7 @@ const CollectionCard = ({ collection, type }) => {
     <Link to={`/album/${collection.id}`} style={{ textDecoration: "none" }}>
       <Card
         sx={{
-          // position: "relative",
+          position: "relative",
           overflow: "hidden",
           border: "none",
           boxShadow: "none",
@@ -31,6 +32,7 @@ const CollectionCard = ({ collection, type }) => {
           backgroundColor: "#1f1f1f",
           color: "white",
           maxWidth: "200px",
+
         }}
       >
         <Box sx={{ display: "flex" }}>
@@ -152,9 +154,10 @@ const CollectionCard = ({ collection, type }) => {
         </Box>
         <CardContent sx={{ padding: "0" }}>
           <Typography component="div" noWrap>
-            {collection.title}
+           {collection.title}
           </Typography>
           <Typography color="white">{collection.release_date}</Typography>
+
         </CardContent>
       </Card>
     </Link>

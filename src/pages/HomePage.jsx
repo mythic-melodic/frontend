@@ -9,15 +9,15 @@ import TrackSlider from "../components/HomePage/TrackSlider";
 
 import playlistAPI from "../api/modules/playlist.api";
 import MusicAPI from "../api/modules/music.api";
-import FavoriteAPI from "../api/modules/favorite.api"
+import FavoriteAPI from "../api/modules/favorite.api";
 import { useSelector, useDispatch } from "react-redux";
 import { setListFavorites } from "../redux/store";
 
 function HomePage() {
   const [popularAlbums, setPopularAlbums] = useState([]);
-  const [dailyTopHits, setDailyTopHits] = useState("");
-  const [melodicTopTracks, setMelodicTopTracks] = useState("");
-  const [dailyTopFavorites, setDailyTopFavorites] = useState("");
+  const [dailyTopHits, setDailyTopHits] = useState([]);
+  const [melodicTopTracks, setMelodicTopTracks] = useState([]);
+  const [dailyTopFavorites, setDailyTopFavorites] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
   const [moods, setMoods] = useState([]);
   const [topArtists, setTopArtists] = useState([]);
@@ -28,7 +28,7 @@ function HomePage() {
     const fetchData = async () => {
       try {
         const favoriteResponse = await FavoriteAPI.getListFavorites(token);
-          dispatch(setListFavorites(favoriteResponse))
+        dispatch(setListFavorites(favoriteResponse));
 
         const DailyTopHitsPlaylist = await playlistAPI.getPlaylistById(
           1,
@@ -54,25 +54,24 @@ function HomePage() {
 
         const publicPlaylists = await MusicAPI.getPublicPlaylists();
         setMoods(publicPlaylists);
-
-  
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
   }, []);
-
-
-
+  console.log(dailyTopFavorites)
   return (
     <Stack
       spacing={5}
       sx={{ width: "75vw", margin: "2rem auto", color: "#fff" }}
     >
-      <Container header="Discover" sx={{
-        height: "50vh"
-      }}>
+      <Container
+        header="Discover"
+        sx={{
+          height: "50vh",
+        }}
+      >
         <Box
           sx={{
             display: "flex", // Sử dụng flexbox để xếp theo hàng ngang
@@ -80,35 +79,35 @@ function HomePage() {
             width: "100%", // Đảm bảo chiều rộng của Box là 100%
           }}
         >
-          <Box
+          {dailyTopHits.length > 0 && <Box
             sx={{
               flex: "1", // Chia đều không gian cho hai Card
               maxWidth: "33%", // Đảm bảo mỗi Card không vượt quá 50% chiều rộng
             }}
           >
-            <PlaylistCard playlist={dailyTopHits} />
-          </Box>
-          <Box
+            <AlbumSlider list={dailyTopHits} type={"Playlist"} />
+          </Box>}
+          {melodicTopTracks.length > 0 && <Box
             sx={{
               flex: "1",
               maxWidth: "33%",
             }}
           >
-            <PlaylistCard playlist={melodicTopTracks} />
-          </Box>
-          <Box
+            <AlbumSlider list={melodicTopTracks} type={"Playlist"} />
+          </Box>}
+          {dailyTopFavorites.length > 0 && <Box
             sx={{
               flex: "1",
               maxWidth: "33%",
             }}
           >
-            <PlaylistCard playlist={dailyTopFavorites} />
-          </Box>
+            <AlbumSlider list={dailyTopFavorites} type={"Playlist"} />
+          </Box>}
         </Box>
       </Container>
 
-      <Container header='New Releases'>
-        <TrackSlider tracks={newReleases}/>
+      <Container header="New Releases">
+        <TrackSlider tracks={newReleases} />
       </Container>
 
       {popularAlbums.length > 0 && (
@@ -134,7 +133,6 @@ function HomePage() {
    
       <Box sx={{ height: "17%", width: "100%" }}></Box>
     </Stack>
-
   );
 }
 

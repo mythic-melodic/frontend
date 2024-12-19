@@ -23,8 +23,21 @@ const TextAvatar = ({ text }) => {
     <Avatar
       sx={{
         backgroundColor: stringToColor(text),
-        width: 40,
-        height: 40
+        width: {
+          xs: "23px",
+          sm: "23px",
+          md: "25px",
+          lg: "30px",
+          xl: "35px",
+        },
+        height: {
+          xs: "23px",
+          sm: "23px",
+          md: "25px",
+          lg: "30px",
+          xl: "35px",
+        },
+        
       }}
       children={`${text.split(" ")[0][0]}`}
     />

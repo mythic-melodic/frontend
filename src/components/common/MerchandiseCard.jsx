@@ -2,7 +2,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
+import createUrl from "../../hooks/createUrl";
 import { Link } from "react-router-dom";
 const theme = createTheme({
   typography: {
@@ -34,7 +34,7 @@ const MerchandiseCard = ({ merchandise }) => {
         >
           <Box
             component="img"
-            src={merchandise.image}
+            src={createUrl(merchandise.image)}
             alt={merchandise.name}
             sx={{
               width: "100%",

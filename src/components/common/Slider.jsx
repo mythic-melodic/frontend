@@ -7,7 +7,7 @@ import ArtistCard from "./ArtistCard.jsx";
 import { Box } from "@mui/material";
 import "swiper/swiper-bundle.css";
 
-const AlbumSlider = ({ list, type }) => {
+const Slider = ({ list, type }) => {
   const [slidesConfig, setSlidesConfig] = useState({
     slidesPerView: 6,
     slidesPerGroup: 6,
@@ -68,4 +68,4 @@ const AlbumSlider = ({ list, type }) => {
   );
 };
 
-export default AlbumSlider;
+export default Slider;

@@ -1,6 +1,6 @@
 import Grid from "@mui/material/Grid2";
 import MerchandiseCard from "./MerchandiseCard";
-import AlbumCard from "./AlbumCard";
+import CollectionCard from "./CollectionCard";
 import ArtistCard from "./ArtistCard";  // Assuming you have an ArtistCard component
 
 const CardGrid = ({ List, Type = "albums" }) => {
@@ -17,7 +17,7 @@ const CardGrid = ({ List, Type = "albums" }) => {
       {List.map((child, index) => (
         <Grid key={index} size={1}>
           {Type === "Albums" ? (
-            <AlbumCard album={child} />
+            <CollectionCard type={'Album'} collection={child} />
           ) : Type === "Artists" ? (
             <ArtistCard artist={child} />
           ) : (
