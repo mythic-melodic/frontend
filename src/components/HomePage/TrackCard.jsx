@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addTrackToQueue } from "../../redux/store";
 import useAudioPlayer from "../../hooks/useAudioPlayer";
+import { Link } from "react-router-dom";
+import createURL from "../../hooks/createUrl"
 
 const TrackCard = ({ track }) => {
   const defaultCover = "../../default/track_cover.png";
@@ -19,6 +21,9 @@ const TrackCard = ({ track }) => {
     console.log("Add to queue:", track.id);
     dispatch(addTrackToQueue({ id: track.id }));
   };
+
+  const defaultCover = "../../default/track_cover.png";
+
 
   return (
     <Box
@@ -44,10 +49,12 @@ const TrackCard = ({ track }) => {
         >
           <Box
             component="img"
+
             src={
               track.track_cover ? createURL(track.track_cover) : defaultCover
             }
             // alt={track.title}
+
             sx={{
               width: "40px",
               height: "40px",
@@ -96,6 +103,7 @@ const TrackCard = ({ track }) => {
                 <a href={`/artist/${artist.id}`} style={{textDecoration: 'none', color: 'white' }}>{artist.display_name}</a>
                 {index < track.artists.length - 1 ? ", " : ""}
               </span>
+
             )) : "Unknown Artist"} */}
 
             {track.artists &&

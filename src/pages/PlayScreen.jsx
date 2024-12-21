@@ -141,10 +141,11 @@ const PlayScreen = ({
 
       // Check if colors exist before accessing
       const vibrantColor = palette.Vibrant ? palette.Vibrant.rgb : [0, 0, 0];
-      const mutedColor = palette.Muted ? palette.Muted.rgb : [50, 50, 50];
+      const mutedColor = palette.Muted ? palette.Muted.rgb : [30, 30, 30];
+      
 
       setGradient(
-        `linear-gradient(90deg, rgb(${vibrantColor.join(
+        `linear-gradient(360deg, rgb(${vibrantColor.join(
           ","
         )}), rgb(${mutedColor.join(",")}))`
       );
@@ -210,10 +211,12 @@ const PlayScreen = ({
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2, mt: 2 }}>
             <img
               ref={imageRef}
-              src={queueSong[currentSongIndex].img ? queueSong[currentSongIndex].img : "https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/8/3/6/c/836cf31f036fb8f89b78cfd07cd77477.jpg"}
+              src={queueSong[currentSongIndex].cover ? queueSong[currentSongIndex].cover : "https://i.ytimg.com/vi/82ZTNQNEQgE/maxresdefault.jpg"}
               alt="Song cover"
               style={{
                 width: "100%",
+                aspectRatio: "1/1",
+                objectFit: "cover",
                 borderRadius: "16px",
               }}
             />
@@ -248,8 +251,17 @@ const PlayScreen = ({
                   letterSpacing: "0px",
                 }}
               >
-                {queueSong[currentSongIndex].artist}
               </Typography>
+              {queueSong[currentSongIndex].artists.map((artist, index) => (
+              <a
+                key={index}
+                href={`/artist/${artist.id}`}
+                style={{ color: "#a5bfd2", textDecoration: "none" }}
+              >
+                {artist.name}
+                {index < queueSong[currentSongIndex].artists.length - 1 && ", "}
+              </a>
+              ))}
             </Box>
             {/* Action Buttons */}
             <Box
@@ -274,6 +286,7 @@ const PlayScreen = ({
             size="15px"
             value={isNaN(seekValue) ? 0 : seekValue}
             onChange={handleSeekChange}
+            width="90%"
             sx={{
               color: "#a5bfd2",
               height: 5,
@@ -342,21 +355,35 @@ const PlayScreen = ({
               "&::-webkit-scrollbar": { display: "none" },
             }}
           >
-            {lyrics.map((line, index) => (
-              <Typography
-                key={index}
-                fontSize={35}
-                fontWeight="bold"
-                color="white"
-                sx={{
-                  textShadow: "2px 2px 4px rgba(128, 128, 128, 0.7)", // Đổ bóng màu đen nhẹ
-
-                  mb: 1,
-                }}
-              >
-                {line}
-              </Typography>
-            ))}
+        {queueSong[currentSongIndex].lyrics ? (
+          queueSong[currentSongIndex].lyrics.map((line, index) => (
+            <Typography
+              key={index}
+              fontSize={35}
+              fontWeight="bold"
+              color="white"
+              sx={{
+                textShadow: "2px 2px 4px rgba(128, 128, 128, 0.7)", // Đổ bóng màu đen nhẹ
+                mb: 1,
+              }}
+            >
+              {line}
+            </Typography>
+          ))
+        ) : (
+          <Typography
+            fontSize={30}
+            fontWeight="bold"
+            color="white"
+            mr={10}
+            sx={{
+              textShadow: "2px 2px 4px rgba(128, 128, 128, 0.7)", // Đổ bóng màu đen nhẹ
+              mb: 1,
+            }}
+          >
+            No Lyrics Available
+          </Typography>
+        )}
           </Box>
         )}
         {/* Lyrics Icon */}
